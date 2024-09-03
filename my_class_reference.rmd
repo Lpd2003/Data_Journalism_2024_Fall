@@ -30,6 +30,21 @@ setwd("C:/GitHub2024/Data_Journalism_2024_Fall")
 ### How to install and load the tidyverse
 
 ```{r}
-install.packages("tidyverse")
+#install.packages("tidyverse")
 library(tidyverse)
 ```
+
+```{r}
+2+2
+```
+Here's what this does:
+Assign a variable:
+```{r}
+Name <- "Luke Denbo"
+Number <- 42
+```
+
+
+
+
+
