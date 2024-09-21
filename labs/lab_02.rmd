@@ -78,12 +78,11 @@ md_voters_2024 %>%
 
 **Q4** Maryland has, officially, five regions: https://www.visitmaryland.org/article/maryland-regions. Modify the original dataframe again to add a `region` column based on the `COUNTY` value using case_when. Are you going to have to do this for every Maryland county plus Baltimore City? Yes, you are. Which regions and parties account for the most new voters?
 
-**A4** 
+**The Democratic Party accounts for the most new voters, with many of them coming from Central Maryland.** 
 
 ```{r}
 md_voters_2024 <- md_voters_2024 %>% 
-   mutate(
-    region = case_when(
+   mutate(region = case_when(
         COUNTY == "Allegany" ~ "Western Maryland",
         COUNTY == "Garrett" ~ "Western Maryland",
         COUNTY == "Washington" ~ "Western Maryland",
@@ -108,17 +107,13 @@ md_voters_2024 <- md_voters_2024 %>%
         COUNTY == "Somerset" ~ "Eastern Shore",
         COUNTY == "Worcester" ~ "Eastern Shore",
         COUNTY == "Cecil" ~ "Eastern Shore"
-        %>% 
-          
-group_by(region) %>%
-  summarise(new_voters=n()) %>%
-  arrange(desc(new_voters)) %>% 
-  
-  group_by(region, party) %>% 
-  summarise(new_voters=n()) %>%
-  arrange(desc(new_voters))
-  
     ))
+          
+md_voters_2024  %>%  
+  group_by(region, PARTY)  %>%  
+  summarize(voters = n()) %>% 
+  arrange(desc(voters))
+
 ```
 
 **Q5** What's an additional question you could ask of this data?
