@@ -51,6 +51,7 @@ census_api_key("7260853f8e6913702edce23fa10e562cc5b1dcd8", overwrite=TRUE)
 variables_2022_acs5 <- load_variables(2022, "acs5", cache = TRUE)
 median_age_data <- get_acs(
   geography = "county",
+  state = "MD",
   variables = "B01002_001",
   year = 2022,
   survey = "acs5",
@@ -75,6 +76,7 @@ variables_2022_acs5 <- load_variables(2022, "acs5", cache = TRUE)
 median_age_data <- get_acs(
   geography = "county",
   variables = "B01002_001",
+  state = "MD",
   year = 2022,
   survey = "acs5",
   geometry = FALSE
@@ -118,10 +120,11 @@ combined_frederick <- frederick_cvr %>%
 
 **Q3** Let's answer some basic questions about ticket-splitting: how many voters voted for different parties in the governor and comptroller's race? How many voted for the same party in both races? What percentage of all voters split their tickets in those races? In how many cases did voters choose the same party in all five contests? What percentage of all voters does that represent?
 
-**A3**
+**11,871  people voted for different parties in the governor and comptrollers race. 95,221 people voted for the same party in both races. About 11% of voters split their tickets. There were 89,916 straight tickets/ people who voted for the same party in all contests. Over 83% of voters voted for the same party across the board.**
 
 ```{r}
-
+combined_frederick %>% 
+  filter(governor_lt_governor==comptroller, governor_lt_governor==attorney_general, governor_lt_governor==u_s_senator, governor_lt_governor==representative_in_congress_6)
 
 ```
 
@@ -131,11 +134,28 @@ combined_frederick <- frederick_cvr %>%
 
 ```{r}
 
+top_zips <- combined_frederick %>% 
+  filter(governor_lt_governor=="DEM", comptroller=="REP", attorney_general=="REP", u_s_senator=="REP", representative_in_congress_6=="REP") %>% 
+  group_by (zipcode) %>% 
+  summarize (voters = n()) %>% 
+  arrange (desc(voters))
+
 ```
 
 **Q5** Let's find out more about those zip codes from A4. Using tidycensus, get a dataframe of Maryland zip codes and their median ages, then join it to the dataframe you produced in A4. NOTE: you'll need to ensure that the two columns you use for the join are the same datatype. Summarize your findings; how would you describe the zip codes with more non-Cox Republicans compared to those with fewer? Where are those leading zip codes located?
 
-**A5**
+**The most ticket-splitters came from the 21702 zip code. The zip codes with more non-Cox voters (Wes Moore voters) are closer to downtown Frederick, which is a more urban area. The zip codes with fewer Wes Moore voters, such as 21780 and 21718, are in more rural areas, close to the PA border.**
 
 ```{r}
+md_zipcodes <- get_acs(geography="zcta", variables = "B01002_001", state='MD', year=2019) 
+
+md_zipcodes <- md_zipcodes %>% 
+  rename (zipcode = GEOID)
+
+top_zips <- top_zips %>% 
+  mutate(across(zipcode, as.character))
+
+zips_with_age <- top_zips %>% 
+  left_join(md_zipcodes) 
+
 ```
