@@ -22,6 +22,7 @@ options(scipen=999)
 library(tidyverse)
 library(tidycensus)
 library(ggplot2)
+library(janitor)
 ```
 
 ## Load data
@@ -34,19 +35,13 @@ library(ggplot2)
 You can clean up column names to make them easier to work with if you like, and should ensure that any date columns are actually date formatted.
 
 ```{r}
-md_absentee_ballots <- read_csv("data/md_absentee_ballots.csv")
+md_absentee_ballots <- read_csv("data/md_absentee_ballots.csv") %>% 
+  clean_names()
 
-md_absentee_ballots <- md_absentee_ballots |>
-  rename(COUNTY = "COUNTY NAME")
+md_absentee_ballots <- md_absentee_ballots %>% 
+  mutate (percent_total_received = (total_received/total_sent)*100) %>% 
+  mutate (dem_total_received = (dem_received/dem_sent)*100) 
 
-md_absentee_ballots
-
-md_absentee_ballots <- read_csv("data/md_absentee_ballots.csv")
-
-md_absentee_ballots <- md_absentee_ballots |>
-  rename(TOTAL_SENT = "TOTAL SENT")
-
-md_absentee_ballots
 ```
 
 
@@ -63,7 +58,10 @@ md_absentee_ballots
 ```{r}
 md_absentee_ballots %>% 
   ggplot() +
-  geom_bar(aes(x="COUNTY", weight="TOTAL_SENT"))
+  geom_bar(aes(x=reorder(county_name, percent_total_received), weight=percent_total_received)) +
+  coord_flip() + 
+  theme_economist()
+  
 
 ```
 
@@ -77,7 +75,11 @@ md_absentee_ballots %>%
 **A2.**
 
 ```{r}
-
+md_absentee_ballots %>% 
+  ggplot() +
+  geom_bar(aes(x=reorder(county_name, -dem_total_received), weight=dem_total_received)) +
+  coord_flip() + 
+  theme_economist()
 ```
 **Q3** Let's make a line chart using the second set of absentee ballot data - this one tracking returns by date. We want to see received ballots for Frederick County for Democrats, Republicans and Others, so you'll make a chart with three lines, adding color to each one (you can choose, but choose sensibly). Give the chart a title and good labels. What's the story that this line chart tells? Compare and contrast the three lines. Does it match what you know about absentee voting habits?
 
