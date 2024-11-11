@@ -1,0 +1,14 @@
+```{r}
+library(tidyverse)
+```
+
+```{r}
+bank_fees_2324 <- read_csv("bank_fees_2324.csv")
+```
+```{r}
+bank_fees_2324 %>% 
+  group_by(recipient_name) %>% 
+  summarize(transactions = n()) %>% 
+  arrange(desc(transactions))
+```
+
