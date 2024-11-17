@@ -1,14 +1,47 @@
 ```{r}
 library(tidyverse)
+library(dplyr)
+```
+
+Questions: 1) How do campaigns decide what bank to use?
+2) What are the most popular banks used to finance elections?
+3) What makes smaller banks, such as Chain Bridge Bank and Middletown Valley Bank, so popular among campaigns?
+4) Is there correlation between location and bank used?
+5) Have there been any significant trends in banks used by election campaigns in the last five years?
+6) Are any large banks not as popular when used for campaign finance?
+7) Are certain banks more “Republican” and certain banks more “Democratic”?
+
+
+```{r}
+bank_fees_24 <- read_csv("2024_Bank_Fees.csv")
+bank_fees_23 <- read_csv("2023_Bank_Fees.csv")
+bank_fees_22 <- read_csv("2022_Bank_Fees.csv")
+bank_fees_21 <- read_csv("2021_Bank_Fees.csv")
+bank_fees_20 <- read_csv("2020_Bank_Fees.csv")
+bank_fees_19 <- read_csv("2019_Bank_Fees.csv")
+
+bank_fees_24$recipient_zip <- as.character(bank_fees_24$recipient_zip)
+bank_fees_23$recipient_zip <- as.character(bank_fees_23$recipient_zip)
+bank_fees_22$recipient_zip <- as.character(bank_fees_22$recipient_zip)
+bank_fees_21$recipient_zip <- as.character(bank_fees_21$recipient_zip)
+bank_fees_20$recipient_zip <- as.character(bank_fees_20$recipient_zip)
+bank_fees_19$recipient_zip <- as.character(bank_fees_19$recipient_zip)
+
+
 ```
 
 ```{r}
-bank_fees_2324 <- read_csv("bank_fees_2324.csv")
+core_data <- bind_rows(bank_fees_24, bank_fees_23, bank_fees_22, bank_fees_21, bank_fees_20, bank_fees_19)
+
+core_data <- core_data[, !(names(core_data) %in% "image_number")]
+core_data <- core_data[, !(names(core_data) %in% "line_number")]
+core_data <- core_data[, !(names(core_data) %in% "unused_recipient_committee_id")]
+
+
+
 ```
-```{r}
-bank_fees_2324 %>% 
+
+bank_fees_24 %>% 
   group_by(recipient_name) %>% 
   summarize(transactions = n()) %>% 
   arrange(desc(transactions))
-```
-
