@@ -1,6 +1,7 @@
 ```{r}
 library(tidyverse)
 library(dplyr)
+library(lubridate)
 ```
 
 Questions: 1) How do campaigns decide what bank to use?
@@ -33,22 +34,31 @@ bank_fees_19$recipient_zip <- as.character(bank_fees_19$recipient_zip)
 ```{r}
 core_data <- bind_rows(bank_fees_24, bank_fees_23, bank_fees_22, bank_fees_21, bank_fees_20, bank_fees_19)
 
-core_data <- core_data %>% select(-file_number)
-core_data <- core_data %>% select(-transaction_id)
-core_data <- core_data %>% select(-report_type)
-core_data <- core_data %>% select(-committee_id)
 core_data <- core_data %>% select(-image_number)
 core_data <- core_data %>% select(-line_number)
-core_data <- core_data %>% select(-entity_type)
 core_data <- core_data %>% select(-entity_type_desc)
 core_data <- core_data %>% select(-unused_recipient_committee_id)
 core_data <- core_data %>% select(-recipient_committee_id)
 core_data <- core_data %>% select(-national_committee_nonfederal_account)
-core_data <- core_data %>% select(-memo_code)
 core_data <- core_data %>% select(-memo_code_full)
 core_data <- core_data %>% select(-original_sub_id)
 core_data <- core_data %>% select(-back_reference_transaction_id)
 core_data <- core_data %>% select(-back_reference_schedule_id)
+
+core_data <- core_data %>% select(-starts_with("candidate_"))
+
+core_data <- core_data %>% mutate(disbursement_date=mdy_hm(disbursement_date))
+
+core_data <- core_data %>% mutate(bank_clean=recipient_name)
+
+#step 1-remove non banks
+#step 2-standardize
+
+core_data <- core_data %>% filter(!recipient_name %in% c("ACTBLUE", "ANEDOT", "YU, EUGENE CHIN", "ZAHRADKA, TAWNJA")
+)
+
+write_csv(core_data %>% select(recipient_name, bank_clean), "banks_for_open_refine.csv")
+
 ```
 
 
