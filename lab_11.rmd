@@ -49,6 +49,8 @@ colnames(frederick_board) <- c("Name", "Early Voting", "Election Day", "Mail In 
 
 frederick_board$Percentage <- as.numeric(gsub("%", "", frederick_board$Percentage))
 
+
+
 ```
 
 **Q2** Next, let's scrape the list of press releases from Maryland's Office of the State Prosecutor, <https://osp.maryland.gov/category/press-releases/>. This isn't a table, so you'll need to use `html_elements()` and your browser's inspector and do some clean up on the results. The result should be a dataframe with three columns: title, url and date. HINT: you can extract the date from the title using lubridate OR you can use the `separate` function.
