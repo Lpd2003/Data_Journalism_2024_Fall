@@ -32,22 +32,19 @@ HINT: In Datawrapper's "Check and Describe" tab, you can click on a column to ge
 
 What do you think the story here is? Put the answer below along with the URL of your chart.
 
-**A1.**
+**https://datawrapper.dwcdn.net/8sw6g/1/ The story here is how much of an outlier 2020 is compared to other elections. Mail-In voting was at an all-time high, election day voting was very low, and more people voted early. 2022 saw a pretty significant bounceback to the norm.**
 
 ```{r}
-md_votes_by_type <- read_csv("data/md_votes_by_type.csv")
-
+md_votes_by_type <- read_csv("data/md_votes_by_type.csv") %>% 
+  clean_names()
 md_voting <- md_votes_by_type %>% 
-  group_by(Year) %>%
-  summarize(
-    early_voting = sum(Early)
-    election_day = sum("Election Day")
-    mail_voting = sum(Mail),
-    md_votes = early_voting + election_day + mail_voting
-  ) %>%
   mutate(
-   
+    percent_early = early/total*100,
+    percent_mail = mail/total*100,
+    percent_election_day = election_day/total*100
   )
+
+write_csv(md_voting,"data/md_voting.csv")
 
 
 ```
@@ -73,10 +70,17 @@ Your chart MUST:
 
 Tell me below why you picked the CSV you did. If you made any changes to the data, put that code below.
 
-**A2.** 
+**https://datawrapper.dwcdn.net/AKUJU/1/ I chose voters 18-24 because I was interested in how young voters show up in early voting.** 
 
 ```{r}
- totals_young <- read_csv("data/ev_totals_18_24.csv")
+ young_voters <- read_csv("data/ev_totals_18_24.csv") %>% 
+  clean_names() %>% 
+  select(day, montgomery, frederick, prince_georges, howard) %>% 
+  mutate(total = montgomery + frederick + prince_georges + howard)
+
+
+  write_csv(young_voters, "data/young_voters.csv")
+    
 ```
 
 **Q3.** After reading the recent CNN story about fundraising called "[How elderly dementia patients are unwittingly fueling political campaigns](https://www.cnn.com/interactive/2024/10/politics/political-fundraising-elderly-election-invs-dg/)," you decide to dig into the habits of Maryland political donors who give money via ActBlue and WinRed.
