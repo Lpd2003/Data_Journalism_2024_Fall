@@ -31,7 +31,9 @@ bank_fees_19$recipient_zip <- as.character(bank_fees_19$recipient_zip)
 
 
 ```
-Remove rows that aren't relevant to dataset. Remove all pieces of data that aren't banks.
+First, I read in 6 years worth of data from the FEC website, going back to 2019. The data I read in specifically searched up the transaction "bank fees" that were reported to the FEC. I thought this would be the most efficient way to find out which campaigns used which banks. Naturally, some transactions were marked as bank fees which had nothing to do with banking at all, so I went through the data and removed everything that wasn't a bank, including merchant services, credit cards, credit unions, as well as transactions like Venmo and Zelle. Finally, I removed rows from the dataframe that weren't relevant to my project.
+
+
 ```{r}
 core_data <- bind_rows(bank_fees_24, bank_fees_23, bank_fees_22, bank_fees_21, bank_fees_20, bank_fees_19)
 
@@ -68,9 +70,18 @@ write_csv(core_data %>% distinct(recipient_name, bank_clean), "banks_for_open_re
 
 ```
 
-Most commonly used banks according to my dataset: 
+I found the most commonly used banks according to my dataset: 
 
-What's interesting here is that the top two banks, and five of the top seven banks, are not major U.S. financial institutions.
+What's interesting here is that the top two banks, as well as two others in the top 10, are not known major financial institutions.
+
+According to my data, the number one bank used by political campaigns is Amalgamated Bank. With just 5 branches across D.C., New York, and San Francisco, Amalgamated Bank is clearly not a household bank when it comes to consumers. According to many in D.C., Amalgamated Bank is known as the "private bank" for the Democratic party. They hold close affiliation with major labor unions, progressive activists, and top democratic groups in D.C. In total, Amalgamated Bank holds about 7 billion dollars in deposits, which is hardly anything compared to the 443 billion held by PNC Bank. It's clear Amalgamated Bank serves a need, and it serves it well.
+
+The number two bank used by political campaigns is Chain Bridge Bank. It serves a very similar purpose to Amalgamated Bank, except for the Republican party. With just a singular branch in McLean, Virginia, Chain Bridge Bank holds just under 2 billion dollars in deposits. They are known as the preferred bank of the Republican party. They have relationships with several top Republican committees associated with Trump, Romney, and McCain, as well as with large conservative super-PACs, lobbying firms, and the Republican National Committee.
+
+The other two banks in the top 10 that aren't major U.S. banks are First Virginia Community Bank and Middletown Valley Bank. 
+
+First Virginia Community Bank, or FVC Bank, is a regional bank with 44 branches across the east coast.  Middletown Valley Bank hasabout 10 branches in Maryland and Pennsylvania. Both of these banks are located fairly close to D.C. and seem to specialize in campaign financing, however neither bank really appears to be affiliated with any particular party. 
+
 ```{r}
 core_data %>% 
   group_by(recipient_name) %>% 
@@ -78,14 +89,15 @@ core_data %>%
   arrange(desc(transactions))
 ```
 
-
+If I had more time on this project, I would use the cleaned up dataset to dive deeper into the banks used in campaign financing. I would see what correlations there are between campaigns and banks in different states, for example if PNC is the popular bank among PA- based campaigns, and which states favor Bank of America or Chase. I'd also like to look into Middletown Valley and FVC bank more, and see what kinds of campaigns use those banks.
 
 ```{r}
 clean_banks <- read_csv("BANK_PROJ.csv") 
   
 new_banks <- core_data %>% left_join(clean_banks) 
 
-
+group_by (recipient_name) %>% 
+  summarize (transactions = n())
 
 ```
 
